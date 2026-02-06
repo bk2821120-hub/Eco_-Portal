@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}News - EcoPortal{% endblock %}
+{% block title %}GreenMind - EcoPortal{% endblock %}
 
 {% block content %}
 <section class="page-header">
-    <h1>Latest Environmental News & Updates</h1>
+    <h1>EcoPortal GreenMind: Environmental Hub</h1>
     <p>Stay updated with what's happening around our planet.</p>
 </section>
 
 <section class="search-container">
-    <form action="{{ url_for('news') }}" method="GET" class="search-form">
+    <form action="{{ url_for('greenmind') }}" method="GET" class="search-form">
         <div class="search-wrapper">
             <i class="fas fa-search"></i>
             <input type="text" name="q" placeholder="Search topics (e.g. Climate, India Pollution, Wildlife...)"
                 value="{{ search_query }}">
-            <button type="submit" class="btn-search">Search News</button>
+            <button type="submit" class="btn-search">Search GreenMind</button>
         </div>
     </form>
 </section>
@@ -24,45 +24,63 @@
         {% if news %}
         {% for item in news %}
         <article class="educational-item">
-            <header class="educational-header">
-                <div class="header-top">
-                    <span class="category-pill">{{ item.category }}</span>
-                    <span class="location-label"><i class="fas fa-globe"></i> {{ item.location }}</span>
-                    <span class="date-label">{{ item.date }}</span>
-                </div>
-                <h2 class="educational-title">{{ item.title }}</h2>
-            </header>
+            <!-- 1. About Search (AI Insight) -->
+            <div class="ai-analysis-header">
+                <div class="ai-badge"><i class="fas fa-magic"></i> About Your Search</div>
+                <p class="ai-text">{{ item.ai_insight }}</p>
+            </div>
 
             <div class="educational-content">
-                <div class="content-section intro">
-                    <h3><i class="fas fa-info-circle"></i> Introduction</h3>
-                    <p>{{ item.intro }}</p>
+                <!-- 2. Introductions -->
+                <div class="content-section">
+                    <h3 class="step-label">01. Shuruat (Overview)</h3>
+                    <p class="intro-p">{{ item.intro }}</p>
                 </div>
 
-                <div class="content-section explanation">
-                    <h3><i class="fas fa-book-open"></i> Why It Matters</h3>
+                <!-- 3. Definitions -->
+                <div class="content-section definition-box">
+                    <h3 class="step-label">02. Samajhiye (Definitions)</h3>
                     <p>{{ item.explanation }}</p>
                 </div>
 
-                <div class="content-section impact">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Impact</h3>
-                    <p>{{ item.impact }}</p>
+                <!-- 4. Point Real-time Example -->
+                <div class="content-section real-time-box">
+                    <h3 class="step-label">03. Asli Example (Live)</h3>
+                    <div class="example-content">
+                        <h4 class="example-title">{{ item.title }}</h4>
+                        <p class="impact-text"><strong>Live Impact:</strong> {{ item.impact }}</p>
+                    </div>
                 </div>
 
-                <div class="content-section awareness">
-                    <h3><i class="fas fa-lightbulb"></i> What You Can Do</h3>
-                    <p>{{ item.awareness }}</p>
+                <!-- 5. Images (Visual Proof) -->
+                {% if item.image %}
+                <div class="content-section visual-box">
+                    <h3 class="step-label">04. Dekhiye (Visuals)</h3>
+                    <div class="educational-image">
+                        <img src="{{ item.image }}" alt="{{ item.title }}">
+                        <div class="image-overlay">
+                            <span class="location-tag"><i class="fas fa-globe-asia"></i> {{ item.location }}</span>
+                        </div>
+                    </div>
                 </div>
+                {% endif %}
 
-                <div class="content-section conclusion">
-                    <h3><i class="fas fa-seedling"></i> Conclusion</h3>
-                    <p>{{ item.conclusion }}</p>
+                <!-- 6. Link for Reference -->
+                <div class="content-section references">
+                    <h3 class="step-label">05. Aur Jaaniye (Links)</h3>
+                    <p class="learning-para"><i class="fas fa-lightbulb"></i> <strong>Learning Tip:</strong> {{
+                        item.learning_point }}</p>
+                    <a href="{{ item.internal_url }}" class="reference-btn">
+                        <i class="fas fa-link"></i> Read Original Resource (GreenMind Frame)
+                    </a>
                 </div>
             </div>
 
             <footer class="educational-footer">
-                <div class="verified-badge">
-                    <i class="fas fa-user-graduate"></i> Curated for EcoPortal Students
+                <div class="footer-meta">
+                    <span class="meta-item"><i class="fas fa-clock"></i> Updated: {{ item.date }}</span>
+                    <span class="meta-item verified"><i class="fas fa-shield-alt"></i> Gemini-AI Verified
+                        Analysis</span>
                 </div>
             </footer>
         </article>
@@ -70,8 +88,8 @@
         {% else %}
         <div class="no-news">
             <i class="fas fa-search-minus"></i>
-            <h2>No specific news found for this topic.</h2>
-            <p>Try searching with broader environmental keywords like "Climate", "India Pollution", or "Wildlife".</p>
+            <h2>No Data Found for this Search.</h2>
+            <p>Try topics like "Climate Crisis", "Wildlife Conservation", or "India Air Quality".</p>
         </div>
         {% endif %}
     </div>
@@ -88,133 +106,181 @@
     }
 
     .educational-item {
-        background: var(--white);
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        background: white;
+        border-radius: 32px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.07);
         overflow: hidden;
-        border: 1px solid rgba(0, 0, 0, 0.05);
-        transition: var(--transition);
+        border: 1px solid #f1f5f9;
     }
 
-    .educational-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    .ai-analysis-header {
+        background: #f8fafc;
+        padding: 2.5rem;
+        border-bottom: 1px solid #e2e8f0;
     }
 
-    .educational-header {
-        padding: 2rem;
-        background: linear-gradient(to right, #f8fdf8, #ffffff);
-        border-bottom: 2px solid var(--background-color);
-    }
-
-    .header-top {
-        display: flex;
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-        font-size: 0.85rem;
-        color: var(--text-light);
+    .ai-badge {
+        display: inline-flex;
         align-items: center;
-    }
-
-    .category-pill {
-        background: var(--primary-color);
+        gap: 8px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 1.2rem;
     }
 
-    .educational-title {
-        font-size: 2.2rem;
-        color: var(--primary-dark);
-        line-height: 1.3;
-        font-weight: 800;
+    .ai-text {
+        font-size: 1.15rem;
+        color: #334155;
+        line-height: 1.6;
+        font-weight: 500;
     }
 
     .educational-content {
-        padding: 2.5rem;
-        display: grid;
-        gap: 2.5rem;
-    }
-
-    .content-section h3 {
-        color: var(--primary-color);
-        font-size: 1.1rem;
-        margin-bottom: 0.8rem;
+        padding: 3rem;
         display: flex;
-        align-items: center;
-        gap: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        flex-direction: column;
+        gap: 3.5rem;
     }
 
-    .content-section p {
+    .step-label {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .intro-p {
+        font-size: 1.4rem;
+        line-height: 1.6;
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .definition-box {
+        background: #f1f5f9;
+        padding: 2rem;
+        border-radius: 24px;
+        border-left: 6px solid #3b82f6;
+    }
+
+    .real-time-box {
+        background: #fff;
+    }
+
+    .example-content {
+        background: #f0fdf4;
+        padding: 2.5rem;
+        border-radius: 24px;
+        border: 1px solid #dcfce7;
+    }
+
+    .example-title {
+        font-size: 1.5rem;
+        color: #166534;
+        margin-bottom: 1rem;
+        font-weight: 800;
+    }
+
+    .impact-text {
+        color: #1e293b;
         font-size: 1.1rem;
         line-height: 1.7;
-        color: #444;
     }
 
-    .content-section.intro p {
-        font-size: 1.2rem;
-        font-weight: 500;
-        color: var(--text-dark);
+    .educational-image {
+        border-radius: 20px;
+        overflow: hidden;
+        height: 400px;
+        position: relative;
     }
 
-    .content-section.awareness {
-        background: #f1f8e9;
-        padding: 1.5rem;
+    .educational-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .image-overlay {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+    }
+
+    .location-tag {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .learning-para {
+        margin-bottom: 1.5rem;
+        color: #475569;
+        line-height: 1.6;
+    }
+
+    .reference-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #0f172a;
+        color: white;
+        padding: 12px 24px;
         border-radius: 12px;
-        border-left: 4px solid var(--primary-light);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: 0.3s;
+    }
+
+    .reference-btn:hover {
+        background: #1e293b;
+        transform: translateY(-3px);
     }
 
     .educational-footer {
-        padding: 1.5rem 2.5rem;
-        background: #f9f9f9;
-        border-top: 1px solid #eee;
+        padding: 2rem 3rem;
+        background: #f8fafc;
+        border-top: 1px solid #f1f5f9;
     }
 
-    .verified-badge {
-        font-size: 0.85rem;
-        color: var(--primary-color);
-        font-weight: 700;
+    .footer-meta {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
     }
 
-    .no-news {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: white;
-        border-radius: 20px;
-        box-shadow: var(--shadow-md);
-    }
-
-    .no-news i {
-        font-size: 3rem;
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-        opacity: 0.5;
-    }
-
-    .no-news h2 {
-        color: var(--primary-dark);
-        margin-bottom: 1rem;
-    }
-
-    .no-news p {
-        color: var(--text-light);
+    .verified {
+        color: #059669;
     }
 
     @media (max-width: 768px) {
-        .educational-title {
-            font-size: 1.6rem;
-        }
-
         .educational-content {
             padding: 1.5rem;
         }
+
+        .educational-image {
+            height: 250px;
+        }
+
+        .intro-p {
+            font-size: 1.1rem;
+        }
     }
 </style>
+
+
 {% endblock %}

@@ -3,70 +3,465 @@
 {% block title %}Report Issue - EcoPortal{% endblock %}
 
 {% block content %}
-<section class="page-header">
-    <h1>Report an Issue</h1>
-    <p>Help us identify environmental hazards in your area.</p>
-    <div style="margin-top: 1rem;">
-        <a href="{{ url_for('my_reports') }}"
-            style="display: inline-block; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border-radius: 20px; text-decoration: none; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.4); transition: all 0.3s;">
-            <i class="fas fa-history"></i> View Submitted Reports
-        </a>
+<section class="report-page">
+    <div class="report-container">
+        <!-- Header -->
+        <div class="report-header">
+            <div class="header-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1>Report an Issue</h1>
+            <p>Help us protect the environment by reporting issues in your area</p>
+            <a href="{{ url_for('my_reports') }}" class="view-reports-link">
+                <i class="fas fa-history"></i> View My Reports
+            </a>
+        </div>
+
+        <!-- Form Card -->
+        <div class="report-form-card">
+            <form action="{{ url_for('report') }}" method="POST" enctype="multipart/form-data">
+                <!-- User Info (Read-only) -->
+                <div class="form-section">
+                    <h3><i class="fas fa-user"></i> Your Information</h3>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label>Full Name</label>
+                            <input type="text" name="name" value="{{ current_user.full_name }}" readonly>
+                        </div>
+                        <div class="form-field">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ current_user.email }}" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Issue Details -->
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Issue Details</h3>
+
+                    <div class="form-field">
+                        <label>Location <span class="required">*</span></label>
+                        <div class="input-with-button">
+                            <input type="text" id="location" name="location" placeholder="e.g., Central Park, New York"
+                                required>
+                            <button type="button" class="detect-btn" onclick="autoDetectLocation()">
+                                <i class="fas fa-crosshairs"></i> Detect
+                            </button>
+                        </div>
+                        <p id="location-status" class="field-hint"></p>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Issue Type <span class="required">*</span></label>
+                        <select name="issue_type" required>
+                            <option value="" disabled selected>Select an issue type</option>
+                            <option value="Air Pollution">🌫️ Air Pollution</option>
+                            <option value="Water Pollution">💧 Water Pollution</option>
+                            <option value="Deforestation">🌳 Deforestation</option>
+                            <option value="Waste Dumping">🗑️ Waste Dumping</option>
+                            <option value="Wildlife Threat">🦁 Wildlife Threat</option>
+                            <option value="Soil Erosion">🏜️ Soil Erosion</option>
+                            <option value="Other">📋 Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label>Description <span class="required">*</span></label>
+                        <textarea name="description" rows="5"
+                            placeholder="Describe the environmental issue in detail..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Media Upload -->
+                <div class="form-section">
+                    <h3><i class="fas fa-camera"></i> Upload Evidence</h3>
+
+                    <div class="upload-zone" onclick="document.getElementById('media-upload').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="upload-text">Click to upload image or video</p>
+                        <p class="upload-hint">Supports: JPG, PNG, MP4 (Max 10MB)</p>
+                        <input type="file" id="media-upload" name="media" accept="image/*,video/*" hidden
+                            onchange="showFileName(this)">
+                    </div>
+                    <p id="file-name" class="file-preview"></p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Report
+                </button>
+            </form>
+        </div>
     </div>
 </section>
 
-<div class="form-container">
-    <div class="form-box">
-        <form action="{{ url_for('report') }}" method="POST" enctype="multipart/form-data">
-            <div class="form-row">
-                <div class="form-group half">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" name="name" value="{{ current_user.full_name }}" readonly>
-                </div>
-                <div class="form-group half">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ current_user.email }}" readonly>
-                </div>
-            </div>
+<style>
+    .report-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem 1rem;
+    }
 
-            <div class="form-group">
-                <label for="location">Location</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <input type="text" id="location" name="location" placeholder="e.g. Central Park, NY" required>
-                </div>
-            </div>
+    .report-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
 
-            <div class="form-group">
-                <label for="issue_type">Issue Type</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <select id="issue_type" name="issue_type" required>
-                        <option value="" disabled selected>Select an issue type</option>
-                        <option value="Air Pollution">Air Pollution</option>
-                        <option value="Water Pollution">Water Pollution</option>
-                        <option value="Deforestation">Deforestation</option>
-                        <option value="Waste Management">Waste Management</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
+    .report-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+    }
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea id="description" name="description" rows="5" placeholder="Describe the issue in detail..."
-                    required></textarea>
-            </div>
+    .header-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        backdrop-filter: blur(10px);
+    }
 
-            <div class="form-group">
-                <label for="image">Upload Image (Optional)</label>
-                <div class="file-upload">
-                    <input type="file" id="image" name="image" accept="image/*">
-                    <p class="file-info">Click to upload or drag and drop</p>
-                </div>
-            </div>
+    .header-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
 
-            <button type="submit" class="btn-primary btn-block">Submit Report</button>
-        </form>
-    </div>
-</div>
+    .report-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .report-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+
+    .view-reports-link {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 50px;
+        text-decoration: none;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s;
+    }
+
+    .view-reports-link:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .report-form-card {
+        background: white;
+        border-radius: 24px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-section:last-of-type {
+        border-bottom: none;
+    }
+
+    .form-section h3 {
+        color: #2d3748;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-section h3 i {
+        color: #667eea;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-field {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-field label {
+        display: block;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .required {
+        color: #e53e3e;
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s;
+        background: #f7fafc;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-field input[readonly] {
+        background: #edf2f7;
+        cursor: not-allowed;
+    }
+
+    .input-with-button {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .input-with-button input {
+        flex: 1;
+    }
+
+    .detect-btn {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: transform 0.2s;
+        white-space: nowrap;
+    }
+
+    .detect-btn:hover {
+        transform: scale(1.05);
+    }
+
+    .field-hint {
+        font-size: 0.85rem;
+        color: #10b981;
+        margin-top: 0.5rem;
+    }
+
+    .upload-zone {
+        border: 3px dashed #cbd5e0;
+        border-radius: 16px;
+        padding: 3rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        background: #f7fafc;
+    }
+
+    .upload-zone:hover {
+        border-color: #667eea;
+        background: #edf2f7;
+    }
+
+    .upload-zone i {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .upload-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+        font-size: 0.9rem;
+        color: #718096;
+    }
+
+    .file-preview {
+        margin-top: 1rem;
+        padding: 12px;
+        background: #e6fffa;
+        border-radius: 8px;
+        color: #047857;
+        font-weight: 600;
+        display: none;
+    }
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn i {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .report-header h1 {
+            font-size: 2rem;
+        }
+
+        .report-form-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    function autoDetectLocation() {
+        const locationInput = document.getElementById('location');
+        const statusText = document.getElementById('location-status');
+        const detectBtn = document.querySelector('.detect-btn');
+
+        detectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Detecting...';
+        detectBtn.disabled = true;
+
+        if (navigator.geolocation) {
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // Update UI immediately with coords while fetching address
+                    locationInput.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                    statusText.textContent = '✓ Coordinates found! Fetching address...';
+                    statusText.style.display = 'block';
+
+                    try {
+                        // Add User-Agent header as required by Nominatim usage policy
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, {
+                            headers: {
+                                'User-Agent': 'EcoPortal/1.0'
+                            }
+                        });
+                        const data = await response.json();
+
+                        const location = data.display_name || `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                        locationInput.value = location;
+                        statusText.textContent = '✓ Location detected successfully!';
+                    } catch (error) {
+                        console.error("Geocoding error:", error);
+                        // Fallback remains coordinates, which we already set
+                        statusText.textContent = '✓ Coordinates detected (Address lookup failed)';
+                    }
+
+                    detectBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Detect';
+                    detectBtn.disabled = false;
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    // Fallback to IP-based location
+                    statusText.textContent = '⚠️ GPS failed. Trying network location...';
+                    statusText.style.color = '#e67e22';
+
+                    fetch('https://ipapi.co/json/')
+                        .then(response => response.json())
+                        .then(data => {
+                            const city = data.city || '';
+                            const region = data.region || '';
+                            const country = data.country_name || '';
+                            const loc = [city, region, country].filter(Boolean).join(', ');
+
+                            if (loc) {
+                                locationInput.value = loc;
+                                statusText.textContent = '✓ Approximate location found (Network)';
+                                statusText.style.color = '#10b981';
+                            } else {
+                                throw new Error("No location data");
+                            }
+                        })
+                        .catch(err => {
+                            console.error("IP Location error:", err);
+                            let msg = '✗ Location denied & Network failed. Please type manually.';
+                            if (error.code === 1) msg = '✗ Permission denied by browser. Please type manually.';
+                            statusText.textContent = msg;
+                            statusText.style.color = '#e53e3e';
+                        })
+                        .finally(() => {
+                            detectBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Detect';
+                            detectBtn.disabled = false;
+                        });
+                },
+                options
+            );
+        } else {
+            // Browser doesn't support Geolocation, try IP fallback immediately
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.city || '';
+                    const region = data.region || '';
+                    const country = data.country_name || '';
+                    locationInput.value = [city, region, country].filter(Boolean).join(', ');
+                    statusText.textContent = '✓ Approximate location found (Network)';
+                })
+                .catch(() => {
+                    statusText.textContent = '✗ Detection not supported. Please enter manually.';
+                    statusText.style.color = '#e53e3e';
+                })
+                .finally(() => {
+                    detectBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Detect';
+                    detectBtn.disabled = false;
+                });
+        }
+    }
+
+    function showFileName(input) {
+        const filePreview = document.getElementById('file-name');
+        if (input.files && input.files[0]) {
+            filePreview.textContent = `✓ Selected: ${input.files[0].name}`;
+            filePreview.style.display = 'block';
+        }
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,3 @@
+# type: ignore file for Pyre - SQLAlchemy dynamic attributes
+# This file tells Pyre to ignore type checking for this module
+# SQLAlchemy models use metaclasses that generate __init__ methods dynamically

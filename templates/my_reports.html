@@ -24,13 +24,20 @@
                 <span style="font-size: 0.85rem; color: #7f8c8d;">{{ report.date_reported.strftime('%Y-%m-%d') }}</span>
             </div>
             <p style="color: #555; line-height: 1.6;">{{ report.description }}</p>
-            <!-- Image placeholder if needed
-                {% if report.image_filename %}
-                <div style="margin-top: 1rem;">
-                    <img src="" alt="Report Image" style="max-width: 100%; border-radius: 5px;">
-                </div>
+
+            {% if report.media_filename %}
+            <div style="margin-top: 1rem;">
+                {% if report.media_type == 'video' %}
+                <video controls style="max-width: 100%; border-radius: 5px;">
+                    <source src="{{ url_for('static', filename='uploads/' + report.media_filename) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                {% else %}
+                <img src="{{ url_for('static', filename='uploads/' + report.media_filename) }}" alt="Report Media"
+                    style="max-width: 100%; border-radius: 5px;">
                 {% endif %}
-                -->
+            </div>
+            {% endif %}
         </div>
         {% endfor %}
     </div>

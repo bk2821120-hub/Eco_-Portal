@@ -1,0 +1,759 @@
+{% extends 'base.html' %}
+
+{% block title %}Community - EcoPortal{% endblock %}
+
+{% block content %}
+<div class="yt-community-wrapper">
+    <!-- Sidebar Navigation -->
+    <aside class="yt-sidebar">
+        <div class="sidebar-section">
+            <a href="{{ url_for('home') }}" class="sidebar-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="{{ url_for('community') }}" class="sidebar-item active">
+                <i class="fas fa-users"></i>
+                <span>Community</span>
+            </a>
+            <a href="{{ url_for('report') }}" class="sidebar-item">
+                <i class="fas fa-plus-circle"></i>
+                <span>Report Issue</span>
+            </a>
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">Categories</h3>
+            <a href="#" class="sidebar-item filter-item" data-filter="all">
+                <i class="fas fa-th"></i>
+                <span>All Posts</span>
+            </a>
+            <a href="#" class="sidebar-item filter-item" data-filter="pollution">
+                <i class="fas fa-smog"></i>
+                <span>Pollution</span>
+            </a>
+            <a href="#" class="sidebar-item filter-item" data-filter="waste">
+                <i class="fas fa-trash"></i>
+                <span>Waste</span>
+            </a>
+            <a href="#" class="sidebar-item filter-item" data-filter="deforestation">
+                <i class="fas fa-tree"></i>
+                <span>Deforestation</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="yt-main-content">
+        <!-- Header Section -->
+        <div class="yt-header">
+            <div class="header-content">
+                <h1>Community</h1>
+                <p>Share and discuss environmental issues with our community</p>
+            </div>
+            <a href="{{ url_for('report') }}" class="yt-create-btn">
+                <i class="fas fa-plus"></i>
+                Create Post
+            </a>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="yt-tabs">
+            <button class="yt-tab active">
+                <i class="fas fa-fire"></i>
+                Latest
+            </button>
+            <button class="yt-tab">
+                <i class="fas fa-heart"></i>
+                Popular
+            </button>
+        </div>
+
+        <!-- Posts Feed -->
+        <div class="yt-feed">
+            {% if issues %}
+            {% for issue in issues %}
+            <article class="yt-post">
+                <!-- Post Header -->
+                <div class="yt-post-header">
+                    <div class="post-author">
+                        <div class="author-avatar">{{ issue.author.full_name[0] }}</div>
+                        <div class="author-info">
+                            <h3 class="author-name">{{ issue.author.full_name }}</h3>
+                            <div class="post-metadata">
+                                <span class="post-time">{{ issue.date_reported.strftime('%b %d, %Y') }}</span>
+                                <span class="metadata-dot">•</span>
+                                <span class="post-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ issue.location }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="issue-badge">{{ issue.issue_type }}</span>
+                </div>
+
+                <!-- Post Content -->
+                <div class="yt-post-body">
+                    <p class="post-text">{{ issue.description }}</p>
+
+                    <!-- Media Content -->
+                    {% if issue.media_filename %}
+                    <div class="post-media">
+                        {% if issue.media_type == 'image' %}
+                        <img src="{{ url_for('static', filename='uploads/' + issue.media_filename) }}" alt="Issue media"
+                            class="media-image">
+                        {% elif issue.media_type == 'video' %}
+                        <video class="media-video" controls>
+                            <source src="{{ url_for('static', filename='uploads/' + issue.media_filename) }}"
+                                type="video/mp4">
+                        </video>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Post Actions -->
+                <div class="yt-post-actions">
+                    <form action="{{ url_for('like_issue', issue_id=issue.id) }}" method="POST" class="action-form">
+                        <button type="submit"
+                            class="action-button {% if current_user.is_authenticated and issue.likes.filter_by(user_id=current_user.id).first() %}active{% endif %}">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>{{ issue.likes.count() }}</span>
+                        </button>
+                    </form>
+                    <button class="action-button" onclick="toggleComments({{ issue.id }})">
+                        <i class="fas fa-comment"></i>
+                        <span>{{ issue.comments.count() }}</span>
+                    </button>
+                    <button class="action-button">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="yt-comments" id="comments-{{ issue.id }}" style="display: none;">
+                    <div class="comments-list">
+                        {% for comment in issue.comments %}
+                        <div class="comment-item">
+                            <div class="comment-avatar">{{ comment.commenter.full_name[0] }}</div>
+                            <div class="comment-content">
+                                <div class="comment-header">
+                                    <span class="comment-author">{{ comment.commenter.full_name }}</span>
+                                    <span class="comment-time">Just now</span>
+                                </div>
+                                <p class="comment-text">{{ comment.text }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <form action="{{ url_for('comment_issue', issue_id=issue.id) }}" method="POST"
+                        class="comment-input-form">
+                        <div class="comment-input-wrapper">
+                            <div class="input-avatar">{{ current_user.full_name[0] if current_user.is_authenticated else
+                                'U' }}</div>
+                            <input type="text" name="comment_text" placeholder="Add a comment..." class="comment-input"
+                                required>
+                            <button type="submit" class="comment-submit">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <div class="yt-empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h2>No posts yet</h2>
+                <p>Be the first to share an environmental issue with the community</p>
+                <a href="{{ url_for('report') }}" class="yt-create-btn">
+                    <i class="fas fa-plus"></i>
+                    Create First Post
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+    /* Reset and Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .yt-community-wrapper {
+        display: flex;
+        min-height: 100vh;
+        background: #0f0f0f;
+        font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: #f1f1f1;
+        padding-top: 60px;
+    }
+
+    /* Sidebar Styles */
+    .yt-sidebar {
+        width: 240px;
+        background: #0f0f0f;
+        border-right: 1px solid #3f3f3f;
+        padding: 12px 0;
+        position: fixed;
+        height: calc(100vh - 60px);
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    .sidebar-section {
+        padding: 8px 12px;
+    }
+
+    .sidebar-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #aaa;
+        padding: 8px 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 10px 12px;
+        color: #f1f1f1;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: background 0.2s;
+        margin-bottom: 4px;
+        cursor: pointer;
+    }
+
+    .sidebar-item:hover {
+        background: #272727;
+    }
+
+    .sidebar-item.active {
+        background: #272727;
+        font-weight: 500;
+    }
+
+    .sidebar-item i {
+        width: 24px;
+        font-size: 20px;
+        color: #f1f1f1;
+    }
+
+    .sidebar-item span {
+        font-size: 14px;
+    }
+
+    .sidebar-divider {
+        height: 1px;
+        background: #3f3f3f;
+        margin: 12px 0;
+    }
+
+    /* Main Content Area */
+    .yt-main-content {
+        flex: 1;
+        margin-left: 240px;
+        padding: 24px;
+        max-width: 1096px;
+    }
+
+    /* Header Section */
+    .yt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .header-content h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #f1f1f1;
+        margin-bottom: 4px;
+    }
+
+    .header-content p {
+        font-size: 14px;
+        color: #aaa;
+    }
+
+    .yt-create-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #3ea6ff;
+        color: #0f0f0f;
+        padding: 10px 16px;
+        border-radius: 18px;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .yt-create-btn:hover {
+        background: #65b8ff;
+    }
+
+    .yt-create-btn i {
+        font-size: 16px;
+    }
+
+    /* Tabs Navigation */
+    .yt-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid #3f3f3f;
+        padding-bottom: 0;
+    }
+
+    .yt-tab {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        color: #aaa;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+    }
+
+    .yt-tab:hover {
+        color: #f1f1f1;
+    }
+
+    .yt-tab.active {
+        color: #f1f1f1;
+        border-bottom-color: #f1f1f1;
+    }
+
+    /* Posts Feed */
+    .yt-feed {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Individual Post Card */
+    .yt-post {
+        background: #212121;
+        border-radius: 12px;
+        padding: 16px;
+        transition: background 0.2s;
+    }
+
+    .yt-post:hover {
+        background: #272727;
+    }
+
+    /* Post Header */
+    .yt-post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .post-author {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .author-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3ea6ff, #0066cc);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 16px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .author-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .author-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: #f1f1f1;
+    }
+
+    .post-metadata {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .metadata-dot {
+        font-size: 8px;
+    }
+
+    .post-location i {
+        font-size: 10px;
+        margin-right: 4px;
+    }
+
+    .issue-badge {
+        background: #065fd4;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: capitalize;
+    }
+
+    /* Post Body */
+    .yt-post-body {
+        margin-bottom: 12px;
+    }
+
+    .post-text {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #f1f1f1;
+        margin-bottom: 12px;
+    }
+
+    .post-media {
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 12px;
+    }
+
+    .media-image,
+    .media-video {
+        width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Post Actions */
+    .yt-post-actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #3f3f3f;
+    }
+
+    .action-form {
+        display: inline-block;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        color: #f1f1f1;
+        padding: 8px 16px;
+        border-radius: 18px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .action-button:hover {
+        background: #3f3f3f;
+    }
+
+    .action-button.active {
+        color: #3ea6ff;
+    }
+
+    .action-button i {
+        font-size: 16px;
+    }
+
+    /* Comments Section */
+    .yt-comments {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #3f3f3f;
+    }
+
+    .comments-list {
+        margin-bottom: 16px;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .comment-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .comment-author {
+        font-size: 13px;
+        font-weight: 500;
+        color: #f1f1f1;
+    }
+
+    .comment-time {
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    .comment-text {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #f1f1f1;
+    }
+
+    /* Comment Input */
+    .comment-input-form {
+        margin-top: 16px;
+    }
+
+    .comment-input-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #181818;
+        border-radius: 22px;
+        padding: 8px 12px;
+        border: 1px solid #3f3f3f;
+        transition: border-color 0.2s;
+    }
+
+    .comment-input-wrapper:focus-within {
+        border-color: #3ea6ff;
+    }
+
+    .input-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 500;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .comment-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: #f1f1f1;
+        font-size: 14px;
+        outline: none;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .comment-input::placeholder {
+        color: #717171;
+    }
+
+    .comment-submit {
+        background: #3ea6ff;
+        border: none;
+        color: #0f0f0f;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .comment-submit:hover {
+        background: #65b8ff;
+    }
+
+    .comment-submit i {
+        font-size: 14px;
+    }
+
+    /* Empty State */
+    .yt-empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        background: #212121;
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 24px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-icon i {
+        font-size: 48px;
+        color: #fff;
+    }
+
+    .yt-empty-state h2 {
+        font-size: 24px;
+        color: #f1f1f1;
+        margin-bottom: 8px;
+    }
+
+    .yt-empty-state p {
+        font-size: 14px;
+        color: #aaa;
+        margin-bottom: 24px;
+    }
+
+    /* Scrollbar Styling */
+    .yt-sidebar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .yt-sidebar::-webkit-scrollbar-track {
+        background: #0f0f0f;
+    }
+
+    .yt-sidebar::-webkit-scrollbar-thumb {
+        background: #3f3f3f;
+        border-radius: 4px;
+    }
+
+    .yt-sidebar::-webkit-scrollbar-thumb:hover {
+        background: #4f4f4f;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .yt-sidebar {
+            width: 72px;
+        }
+
+        .sidebar-item span,
+        .sidebar-title {
+            display: none;
+        }
+
+        .sidebar-item {
+            justify-content: center;
+            gap: 0;
+        }
+
+        .yt-main-content {
+            margin-left: 72px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .yt-sidebar {
+            display: none;
+        }
+
+        .yt-main-content {
+            margin-left: 0;
+            padding: 16px;
+        }
+
+        .yt-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .header-content h1 {
+            font-size: 24px;
+        }
+
+        .yt-post {
+            padding: 12px;
+        }
+
+        .action-button span {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    function toggleComments(issueId) {
+        const commentsDiv = document.getElementById('comments-' + issueId);
+        if (commentsDiv.style.display === 'none') {
+            commentsDiv.style.display = 'block';
+        } else {
+            commentsDiv.style.display = 'none';
+        }
+    }
+
+    // Filter functionality
+    document.querySelectorAll('.filter-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+            // Add filter logic here if needed
+        });
+    });
+</script>
+{% endblock %}
