@@ -329,26 +329,27 @@ def greenmind():
                     
                     # ... (keeping existing image fallback logic) ...
                     if not image_url:
-                        # Use Unsplash Source API for dynamic keyword matching
-                        # This tells Unsplash to give us a random photo matching these keywords
-                        
                         # Extract key terms for better image matching
-                        text_for_matching = (entry.title + " " + clean_text).lower()
+                        text_for_matching = (entry.title + " " + clean_text + " " + (query or "")).lower()
                         keywords = []
-                        if "india" in text_for_matching: keywords.append("india")
-                        if "river" in text_for_matching or "water" in text_for_matching: keywords.append("river")
-                        if "animal" in text_for_matching or "wildlife" in text_for_matching: keywords.append("wildlife")
-                        if "forest" in text_for_matching: keywords.append("forest")
-                        if "pollution" in text_for_matching: keywords.append("pollution")
-                        if "plastic" in text_for_matching: keywords.append("plastic")
-                        if "solar" in text_for_matching: keywords.append("solar-panel")
-                        if "climate" in text_for_matching: keywords.append("climate-change")
                         
-                        # If we have specific keywords, use them. Otherwise default to nature.
+                        # Add user's query as the primary keyword if applicable
+                        if query and len(query) > 2:
+                            keywords.append(query.replace(" ", "-"))
+
+                        # Detect other environmental contexts
+                        if "india" in text_for_matching: keywords.append("india")
+                        if any(w in text_for_matching for w in ["river", "water", "ocean", "sea"]): keywords.append("water")
+                        if any(w in text_for_matching for w in ["wildlife", "animal", "tiger", "lion"]): keywords.append("wildlife")
+                        if "forest" in text_for_matching: keywords.append("forest")
+                        if any(w in text_for_matching for w in ["pollution", "smog", "smoke"]): keywords.append("pollution")
+                        if "plastic" in text_for_matching: keywords.append("plastic-waste")
+                        if any(w in text_for_matching for w in ["solar", "wind", "energy", "tech"]): keywords.append("green-energy")
+                        if any(w in text_for_matching for w in ["climate", "warming", "earth"]): keywords.append("environment")
+                        
+                        # Use Unsplash Source API with refined keywords
                         search_term = ",".join(keywords) if keywords else "nature,environment"
                         
-                        # Use a unique seed (entry title hash) so the image stays consistent for the same news item
-                        # but changes for different items.
                         import hashlib
                         unique_sig = hashlib.md5(entry.title.encode('utf-8')).hexdigest()[:5]
                         
