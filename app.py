@@ -30,6 +30,7 @@ import re
 import csv
 import socket
 import requests
+import hashlib
 from werkzeug.utils import secure_filename
 
 # Set global timeout for socket operations
