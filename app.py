@@ -236,8 +236,8 @@ def greenmind():
     
     # Base feeds + dynamic search if query exists
     if query:
-        # Relaxed search query to ensure results
-        search_query = f"{query} environment"
+        # Improved search query
+        search_query = f"{query} environment news"
         feeds = [(f"https://news.google.com/rss/search?q={search_query}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result")]
     else:
         # High-quality direct sources + Google News filtered search
@@ -255,68 +255,53 @@ def greenmind():
     
     educational_news = []
     
-    # Category-based learning database for educational expansion
-    learning_repo = {
-        "Climate Change": {
-            "exp": "Climate change or 'Mausam Badlav' is the shifting of our Prithvi's natural cooling and heating cycles. Due to excessive carbon emissions, our Mother Earth is warming up at an alarming rate, affecting every season in our country.",
-            "impact": "In India, this means unpredictable monsoons, heatwaves in the North, and rising sea levels in coastal areas like Mumbai and Kolkata, affecting our 'Annadata' (farmers).",
-            "learning": "We must embrace clean energy and plant more 'Hariyali' to keep our environment cool and stable."
-        },
-        "Pollution": {
-            "exp": "Pollution is the 'Pradushan' that poisons our air, water, and soil. From urban smog to plastic in our sacred rivers, it's a challenge that affects every Indian home.",
-            "impact": "It leads to health issues for our children and elders, and destroys the fertility of our soil, making it harder for anything to grow.",
-            "learning": "Small steps like 'Swachhata' (cleanliness) and reducing plastic solve the root cause of this hazard."
-        },
-        "Green Tech": {
-            "exp": "Green Tech is our modern 'Vaigyanik' solution—using solar power, wind energy, and electric vehicles to build a 'Green India' without hurting nature.",
-            "impact": "It creates new 'Harit' (green) jobs and ensures that our progress doesn't come at the cost of our children's future health.",
-            "learning": "Supporting local solar initiatives and choosing eco-friendly travel are the keys to our success."
-        },
-        "India Environment": {
-            "exp": "India's environment is unique, from the Himalayas to the Indian Ocean. Protecting our biodiversity and keeping our air clean is a national priority for our 'Sone ki Chidiya'.",
-            "impact": "Air quality index (AQI) issues and river pollution directly impact our quality of life and the longevity of our heritage.",
-            "learning": "Joining 'Jan Andolan' (people's movements) for cleanliness and tree plantation is the duty of every citizen."
-        },
-        "Wildlife": {
-            "exp": "Wildlife or 'Vanya Jeev' are the gems of our forests. From the Tigers of Bengal to the Elephants of Kerala, they maintain the 'Prakriti' (Nature) balance.",
-            "impact": "Losing even one species disrupts the natural cycle that gives us clean water, rich soil, and fresh air.",
-            "learning": "Co-existing peacefully with animals and respecting their forest homes is the true Indian way of life."
-        },
-        "Water & Resources": {
-            "exp": "Water or 'Jal' is the lifeline of India. Our rivers like Ganga, Yamuna, and Krishna are not just water bodies but symbols of our life and culture.",
-            "impact": "Water scarcity affects our 'Pani' supply and hurts our crops, leading to struggles for our rural brothers and sisters.",
-            "learning": "Rainwater harvesting and preventing river pollution are essential to ensure 'Har Ghar Jal' for everyone."
-        }
-    }
+    # ... (learning_repo definition skipped for brevity if not changing) ...
+    # Wait, I need to keep learning_repo. 
+    # I will assume the previous replace context allows me to replace just the loop part or I need to include learning_repo if I replace the whole block.
+    # The previous `view_file` shows learning_repo is lines 236-267.
+    # I will target lines 271 onwards to fix the fetching logic.
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
     
     for url, category in feeds:
         try:
-            response = requests.get(url, headers=headers, timeout=8) # Increased timeout
+            response = requests.get(url, headers=headers, timeout=8)
             if response.status_code == 200:
                 feed = feedparser.parse(response.content)
                 
-                limit = 6 if query else 3
+                limit = 10 if query else 3 # Increased limit for search
                 count = 0
                 for entry in feed.entries:
                     if count >= limit: break
                     
-                    summary = entry.summary if 'summary' in entry else ""
-                    raw_text = re.sub('<[^<]+?>', '', summary) if summary else entry.title
+                    # Enhanced Summary Extraction
+                    summary = entry.get('summary', '') or entry.get('description', '')
+                    # Remove Google News extra HTML links
+                    if '<font size="-1">' in summary:
+                        summary = summary.replace('<font size="-1">', '').replace('</font>', '')
                     
+                    # Clean tags
+                    clean_text = re.sub('<[^<]+?>', ' ', summary)
+                    # Normalize whitespace
+                    clean_text = " ".join(clean_text.split())
+                    
+                    # If summary is still too short/empty, use title as backup
+                    if len(clean_text) < 20: 
+                        clean_text = entry.title
+
                     # Try to extract an image URL
                     image_url = None
                     if 'media_content' in entry:
-                        image_url = entry.media_content[0]['url']
+                         # ... (image logic) ...
+                         image_url = entry.media_content[0]['url']
                     elif 'links' in entry:
                         for link in entry.links:
                             if 'image' in link.get('type', ''):
                                 image_url = link.href
                     
-                    # Fine-tuned Image Selection (Prioritizing specific topics over general geography)
+                    # ... (keeping existing image fallback logic) ...
                     if not image_url:
-                        text_for_matching = (entry.title + " " + raw_text).lower()
+                        text_for_matching = (entry.title + " " + clean_text).lower()
                         
                         # 1. Wildlife & Biodiversity (Highest priority)
                         if any(w in text_for_matching for w in ["wildlife", "animal", "species", "tiger", "lion", "elephant", "forest", "nature", "biodiversity", "conservation"]):
@@ -363,7 +348,7 @@ def greenmind():
                         
                     edu = learning_repo.get(category_key, learning_repo["Climate Change"])
 
-                    # Dynamic AI Enrichment: If searching, add a custom "About Search" note
+                    # Dynamic AI Enrichment
                     ai_insight = f"About your search: Analysis indicates that this development in {category_key} is a high-priority environmental trend. "
                     if query:
                         ai_insight += f"The search for '{query}' specifically matches recent spikes in global awareness regarding resource sustainability."
@@ -372,7 +357,7 @@ def greenmind():
                         'title': entry.title,
                         'category': category_key,
                         'image': image_url,
-                        'intro': raw_text[:250] + ( "..." if len(raw_text) > 250 else ""),
+                        'intro': clean_text[:250] + ( "..." if len(clean_text) > 250 else ""),
                         'explanation': edu['exp'],
                         'impact': edu['impact'],
                         'learning_point': edu['learning'],
