@@ -13,7 +13,18 @@ if "cgi" not in sys.modules:
     mock_cgi = types.ModuleType("cgi")
     mock_cgi.escape = html.escape
     mock_cgi.parse_qsl = urllib.parse.parse_qsl
-    # Add other attributes if specifically needed by feedparser, but usually just import is enough
+    
+    # feedparser also often uses parse_header
+    def parse_header(line):
+        import email.message
+        m = email.message.Message()
+        m['content-type'] = line
+        params = m.get_params()
+        if not params:
+            return '', {}
+        return params[0][0], dict(params[1:])
+    
+    mock_cgi.parse_header = parse_header
     sys.modules["cgi"] = mock_cgi
 # ------------------------------------------------------------------------------
 
