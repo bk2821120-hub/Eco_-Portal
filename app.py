@@ -301,35 +301,30 @@ def greenmind():
                     
                     # ... (keeping existing image fallback logic) ...
                     if not image_url:
+                        # Use Unsplash Source API for dynamic keyword matching
+                        # This tells Unsplash to give us a random photo matching these keywords
+                        
+                        # Extract key terms for better image matching
                         text_for_matching = (entry.title + " " + clean_text).lower()
+                        keywords = []
+                        if "india" in text_for_matching: keywords.append("india")
+                        if "river" in text_for_matching or "water" in text_for_matching: keywords.append("river")
+                        if "animal" in text_for_matching or "wildlife" in text_for_matching: keywords.append("wildlife")
+                        if "forest" in text_for_matching: keywords.append("forest")
+                        if "pollution" in text_for_matching: keywords.append("pollution")
+                        if "plastic" in text_for_matching: keywords.append("plastic")
+                        if "solar" in text_for_matching: keywords.append("solar-panel")
+                        if "climate" in text_for_matching: keywords.append("climate-change")
                         
-                        # 1. Wildlife & Biodiversity (Highest priority)
-                        if any(w in text_for_matching for w in ["wildlife", "animal", "species", "tiger", "lion", "elephant", "forest", "nature", "biodiversity", "conservation"]):
-                            image_url = "https://images.unsplash.com/photo-1504109586057-7a2ae83d1338?w=800&q=80"
+                        # If we have specific keywords, use them. Otherwise default to nature.
+                        search_term = ",".join(keywords) if keywords else "nature,environment"
                         
-                        # 2. Water, Oceans & Crises
-                        elif any(w in text_for_matching for w in ["water", "river", "ocean", "sea", "flood", "drought", "crisis", "groundwater", "drinking"]):
-                            image_url = "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&q=80"
+                        # Use a unique seed (entry title hash) so the image stays consistent for the same news item
+                        # but changes for different items.
+                        import hashlib
+                        unique_sig = hashlib.md5(entry.title.encode('utf-8')).hexdigest()[:5]
                         
-                        # 3. Green Technology & Energy
-                        elif any(w in text_for_matching for w in ["solar", "wind", "tech", "energy", "electric", "battery", "innovation", "renewable", "power"]):
-                            image_url = "https://images.unsplash.com/photo-1466611653911-95282fc3656d?w=800&q=80"
-                        
-                        # 4. Pollution & Waste
-                        elif any(w in text_for_matching for w in ["pollution", "plastic", "waste", "smog", "air", "trash", "contamination", "toxic"]):
-                            image_url = "https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&q=80"
-                        
-                        # 5. Climate Change & Global Warming
-                        elif any(w in text_for_matching for w in ["climate", "global warming", "carbon", "emission", "greenhouse", "arctic", "glacier"]):
-                            image_url = "https://images.unsplash.com/photo-1574169207511-e21a21c8075a?w=800&q=80"
-                        
-                        # 6. Geographic focus (India)
-                        elif "india" in text_for_matching:
-                            image_url = "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80"
-                        
-                        # Default Fallback
-                        else:
-                            image_url = "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800&q=80"
+                        image_url = f"https://source.unsplash.com/800x600/?{search_term}&sig={unique_sig}"
 
                     # Robust categorization
                     title_lower = entry.title.lower()
