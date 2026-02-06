@@ -252,23 +252,24 @@ def greenmind():
     query = request.args.get('q', '')
     
     # Base feeds + dynamic search if query exists
+    feeds = []
     if query:
         # More flexible search query
         search_query = f"{query} environmental"
-        feeds = [(f"https://news.google.com/rss/search?q={search_query.replace(' ', '+')}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result")]
-    else:
-        # High-quality direct sources + Google News filtered search
-        feeds = [
-            ("http://feeds.bbci.co.uk/news/science_and_environment/rss.xml", "Climate Change"),
-            ("https://www.sciencedaily.com/rss/earth_climate/climate_change.xml", "Climate Science"),
-            ("https://www.theguardian.com/environment/rss", "Global Policy"),
-            ("https://rss.dw.com/xml/rss-en-environment", "Climate Science"),
-            ("https://news.google.com/rss/search?q=site:thehindu.com+environment&hl=en-IN&gl=IN&ceid=IN:en", "India Environment"),
-            ("https://news.google.com/rss/search?q=site:nationalgeographic.com+environment+wildlife&hl=en-US&gl=US&ceid=US:en", "Wildlife"),
-            ("https://news.google.com/rss/search?q=site:unep.org+news&hl=en-US&gl=US&ceid=US:en", "Global Policy"),
-            ("https://news.google.com/rss/search?q=site:climate.nasa.gov+news&hl=en-US&gl=US&ceid=US:en", "Climate Science"),
-            ("https://news.google.com/rss/search?q=site:indianexpress.com+environment&hl=en-IN&gl=IN&ceid=IN:en", "India News")
-        ]
+        feeds.append((f"https://news.google.com/rss/search?q={search_query.replace(' ', '+')}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result"))
+    
+    # Always add high-quality direct sources as backup or diversification
+    feeds.extend([
+        ("http://feeds.bbci.co.uk/news/science_and_environment/rss.xml", "Climate Change"),
+        ("https://www.sciencedaily.com/rss/earth_climate/climate_change.xml", "Climate Science"),
+        ("https://www.theguardian.com/environment/rss", "Global Policy"),
+        ("https://rss.dw.com/xml/rss-en-environment", "Climate Science"),
+        ("https://news.google.com/rss/search?q=site:thehindu.com+environment&hl=en-IN&gl=IN&ceid=IN:en", "India Environment"),
+        ("https://news.google.com/rss/search?q=site:nationalgeographic.com+environment+wildlife&hl=en-US&gl=US&ceid=US:en", "Wildlife"),
+        ("https://news.google.com/rss/search?q=site:unep.org+news&hl=en-US&gl=US&ceid=US:en", "Global Policy"),
+        ("https://news.google.com/rss/search?q=site:climate.nasa.gov+news&hl=en-US&gl=US&ceid=US:en", "Climate Science"),
+        ("https://news.google.com/rss/search?q=site:indianexpress.com+environment&hl=en-IN&gl=IN&ceid=IN:en", "India News")
+    ])
     
     educational_news = []
     
@@ -310,10 +311,10 @@ def greenmind():
     
     for url, category in feeds:
         try:
-            response = requests.get(url, headers=headers, timeout=8)
-            if response.status_code == 200:
-                feed = feedparser.parse(response.content)
-                
+            # feedparser.parse can handle URLs directly and is sometimes more robust
+            feed = feedparser.parse(url)
+            
+            if feed.entries:
                 limit = 10 if query else 3 # Increased limit for search
                 count = 0
                 for entry in feed.entries:
@@ -410,7 +411,7 @@ def greenmind():
                     })
                     count += 1
             else:
-                app.logger.warning(f"Feed error {response.status_code} for {url}")
+                app.logger.warning(f"No entries found for {url}")
         except Exception as e:
             app.logger.error(f"GreenMind Fetch Error for {url}: {e}")
             
