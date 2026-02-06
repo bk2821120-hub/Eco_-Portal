@@ -14,7 +14,6 @@ if "cgi" not in sys.modules:
     mock_cgi.escape = html.escape
     mock_cgi.parse_qsl = urllib.parse.parse_qsl
     
-    # feedparser also often uses parse_header
     def parse_header(line):
         import email.message
         m = email.message.Message()
@@ -25,6 +24,12 @@ if "cgi" not in sys.modules:
         return params[0][0], dict(params[1:])
     
     mock_cgi.parse_header = parse_header
+    
+    class FieldStorage:
+        pass
+    mock_cgi.FieldStorage = FieldStorage
+    mock_cgi.MiniFieldStorage = FieldStorage # Some old libs use this
+    
     sys.modules["cgi"] = mock_cgi
 # ------------------------------------------------------------------------------
 
