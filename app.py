@@ -239,7 +239,7 @@ def greenmind():
     if query:
         # More flexible search query
         search_query = f"{query} environmental"
-        feeds = [(f"https://news.google.com/rss/search?q={search_query}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result")]
+        feeds = [(f"https://news.google.com/rss/search?q={search_query.replace(' ', '+')}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result")]
     else:
         # High-quality direct sources + Google News filtered search
         feeds = [
