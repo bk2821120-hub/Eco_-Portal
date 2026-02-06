@@ -237,8 +237,8 @@ def greenmind():
     
     # Base feeds + dynamic search if query exists
     if query:
-        # Improved search query
-        search_query = f"{query} environment news"
+        # More flexible search query
+        search_query = f"{query} environmental"
         feeds = [(f"https://news.google.com/rss/search?q={search_query}&hl=en-IN&gl=IN&ceid=IN:en", "Search Result")]
     else:
         # High-quality direct sources + Google News filtered search
@@ -409,6 +409,8 @@ def greenmind():
             'impact': learning_repo["Climate Change"]["impact"],
             'learning_point': learning_repo["Climate Change"]["learning"],
             'ai_insight': "Sustainability is the only path forward for a healthy planet.",
+            'source_url': "https://www.unep.org/",
+            'internal_url': url_for('greenmind'),
             'date': datetime.now().strftime("%d %B %Y"),
             'location': "Global"
         })
