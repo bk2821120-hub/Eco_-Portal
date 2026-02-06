@@ -255,11 +255,39 @@ def greenmind():
     
     educational_news = []
     
-    # ... (learning_repo definition skipped for brevity if not changing) ...
-    # Wait, I need to keep learning_repo. 
-    # I will assume the previous replace context allows me to replace just the loop part or I need to include learning_repo if I replace the whole block.
-    # The previous `view_file` shows learning_repo is lines 236-267.
-    # I will target lines 271 onwards to fix the fetching logic.
+    # Category-based learning database for educational expansion
+    learning_repo = {
+        "Climate Change": {
+            "exp": "Climate change or 'Mausam Badlav' is the shifting of our Prithvi's natural cooling and heating cycles. Due to excessive carbon emissions, our Mother Earth is warming up at an alarming rate, affecting every season in our country.",
+            "impact": "In India, this means unpredictable monsoons, heatwaves in the North, and rising sea levels in coastal areas like Mumbai and Kolkata, affecting our 'Annadata' (farmers).",
+            "learning": "We must embrace clean energy and plant more 'Hariyali' to keep our environment cool and stable."
+        },
+        "Pollution": {
+            "exp": "Pollution is the 'Pradushan' that poisons our air, water, and soil. From urban smog to plastic in our sacred rivers, it's a challenge that affects every Indian home.",
+            "impact": "It leads to health issues for our children and elders, and destroys the fertility of our soil, making it harder for anything to grow.",
+            "learning": "Small steps like 'Swachhata' (cleanliness) and reducing plastic solve the root cause of this hazard."
+        },
+        "Green Tech": {
+            "exp": "Green Tech is our modern 'Vaigyanik' solution—using solar power, wind energy, and electric vehicles to build a 'Green India' without hurting nature.",
+            "impact": "It creates new 'Harit' (green) jobs and ensures that our progress doesn't come at the cost of our children's future health.",
+            "learning": "Supporting local solar initiatives and choosing eco-friendly travel are the keys to our success."
+        },
+        "India Environment": {
+            "exp": "India's environment is unique, from the Himalayas to the Indian Ocean. Protecting our biodiversity and keeping our air clean is a national priority for our 'Sone ki Chidiya'.",
+            "impact": "Air quality index (AQI) issues and river pollution directly impact our quality of life and the longevity of our heritage.",
+            "learning": "Joining 'Jan Andolan' (people's movements) for cleanliness and tree plantation is the duty of every citizen."
+        },
+        "Wildlife": {
+            "exp": "Wildlife or 'Vanya Jeev' are the gems of our forests. From the Tigers of Bengal to the Elephants of Kerala, they maintain the 'Prakriti' (Nature) balance.",
+            "impact": "Losing even one species disrupts the natural cycle that gives us clean water, rich soil, and fresh air.",
+            "learning": "Co-existing peacefully with animals and respecting their forest homes is the true Indian way of life."
+        },
+        "Water & Resources": {
+            "exp": "Water or 'Jal' is the lifeline of India. Our rivers like Ganga, Yamuna, and Krishna are not just water bodies but symbols of our life and culture.",
+            "impact": "Water scarcity affects our 'Pani' supply and hurts our crops, leading to struggles for our rural brothers and sisters.",
+            "learning": "Rainwater harvesting and preventing river pollution are essential to ensure 'Har Ghar Jal' for everyone."
+        }
+    }
 
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
     
