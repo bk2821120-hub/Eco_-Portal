@@ -1,4 +1,5 @@
-# 🌿 EcoPortal - Environmental News & Awareness Platform
+# 🌿 EcoPortal
+**Deployment Update:** Forced Python 3.9 runtime to fix feedparser compatibility. - Environmental News & Awareness Platform
 
 A comprehensive web platform for environmental news, climate awareness, and community-driven issue reporting with a modern YouTube-style community interface.
 
