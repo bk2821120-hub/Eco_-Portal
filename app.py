@@ -1,4 +1,22 @@
 # pyre-ignore-all-errors
+import sys
+import html
+import urllib.parse
+import types
+
+# ------------------------------------------------------------------------------
+# HOTFIX: Polyfill 'cgi' module for Python 3.13+ compatibility
+# The 'cgi' module was removed in Python 3.13, but 'feedparser' still depends on it.
+# This code creates a fake 'cgi' module so imports don't crash.
+# ------------------------------------------------------------------------------
+if "cgi" not in sys.modules:
+    mock_cgi = types.ModuleType("cgi")
+    mock_cgi.escape = html.escape
+    mock_cgi.parse_qsl = urllib.parse.parse_qsl
+    # Add other attributes if specifically needed by feedparser, but usually just import is enough
+    sys.modules["cgi"] = mock_cgi
+# ------------------------------------------------------------------------------
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
