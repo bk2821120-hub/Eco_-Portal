@@ -1,162 +1,304 @@
 {% extends 'base.html' %}
 
-{% block title %}Reading Internal - GreenMind EcoPortal{% endblock %}
+{% block title %}Focus Mode - GreenMind EcoPortal{% endblock %}
 
 {% block content %}
-<section class="reader-container">
-    <div class="reader-header">
-        <a href="{{ url_for('greenmind') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to GreenMind</a>
-        <p class="reader-mode-tag"><i class="fas fa-eye"></i> GreenMind Focus Mode Active</p>
-    </div>
+<div class="greenmind-page-wrapper">
+    <section class="reader-container">
+        <div class="reader-header-modern">
+            <a href="{{ url_for('greenmind') }}" class="back-btn-modern">
+                <i class="fas fa-arrow-left"></i> Exit Focus Mode
+            </a>
+            <div class="modern-badge-mini"><i class="fas fa-eye"></i> Reader Optimized</div>
+        </div>
 
-    <div class="article-content-wrapper">
-        {% if error %}
-        <div class="error-box">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h3>Source Connection Restricted</h3>
-            <p>This news source ({{ source_url }}) refuses to be embedded for security reasons. However, you can still
-                view our Gemini AI-verified report or visit the source directly.</p>
-            <a href="{{ source_url }}" target="_blank" class="external-btn">Open in New Tab</a>
-        </div>
-        {% else %}
-        <h1 class="article-title">{{ title }}</h1>
+        <div class="article-glass-card">
+            {% if error %}
+            <div class="error-slate">
+                <div class="error-icon"><i class="fas fa-shield-slash"></i></div>
+                <h3>Connection Restricted</h3>
+                <p>The original source ({{ source_url }}) prevents direct extraction for security reasons. However, our
+                    AI has summarized the core findings for you in the previous screen.</p>
+                <div class="error-actions">
+                    <a href="{{ source_url }}" target="_blank" class="btn-external-direct">
+                        View Original Site <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <header class="article-top">
+                <h1 class="premium-title">{{ title }}</h1>
+                <div class="article-meta-row">
+                    <span class="meta-v"><i class="fas fa-check-circle"></i> AI Synthesized Report</span>
+                    <span class="meta-v"><i class="fas fa-globe"></i> Open Access</span>
+                </div>
+            </header>
 
-        {% if image %}
-        <div class="reader-hero">
-            <img src="{{ image }}" alt="{{ title }}">
-        </div>
-        {% endif %}
+            {% if image %}
+            <div class="reader-hero-modern">
+                <img src="{{ image }}" alt="{{ title }}">
+                <div class="hero-overlay-gradient"></div>
+            </div>
+            {% endif %}
 
-        <div class="article-body">
-            {% for para in body %}
-            <p>{{ para }}</p>
-            {% endfor %}
+            <div class="premium-article-body">
+                {% for para in body %}
+                <p>{{ para }}</p>
+                {% endfor %}
+            </div>
+
+            <footer class="reader-footer-modern">
+                <p class="disclaimer">Sustainable Knowledge Management: This content was extracted to facilitate
+                    environmental education and research.</p>
+                <div class="footer-links-row">
+                    <a href="{{ source_url }}" target="_blank" class="external-ref-link">
+                        Reference Original Source <i class="fas fa-external-link-square-alt"></i>
+                    </a>
+                </div>
+            </footer>
+            {% endif %}
         </div>
-        <div class="reader-footer">
-            <p>Content extracted for educational analysis in GreenMind Focus Mode.</p>
-            <a href="{{ source_url }}" target="_blank">View Original Format <i class="fas fa-external-link-alt"></i></a>
-        </div>
-        {% endif %}
-    </div>
-</section>
+    </section>
+</div>
 
 <style>
-    .reader-container {
-        padding: 4rem 2rem;
-        max-width: 900px;
-        margin: 0 auto;
+    :root {
+        --gm-primary: #10b981;
+        --gm-bg: #fdfdfd;
+        --gm-card-bg: rgba(255, 255, 255, 0.9);
+    }
+
+    .greenmind-page-wrapper {
+        background-color: var(--gm-bg);
+        background-image:
+            radial-gradient(at 0% 0%, hsla(158, 64%, 92%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 0%, hsla(202, 80%, 94%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(158, 64%, 92%, 1) 0, transparent 50%);
         min-height: 100vh;
+        padding-bottom: 5rem;
     }
 
-    .article-content-wrapper {
-        background: white;
-        padding: 4rem;
-        border-radius: 32px;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.06);
+    .reader-container {
+        max-width: 950px;
+        margin: 0 auto;
+        padding: 6rem 2rem 2rem;
     }
 
-    .article-title {
-        font-size: 2.5rem;
-        color: #0f172a;
-        margin-bottom: 2.5rem;
-        line-height: 1.3;
-        font-weight: 800;
-    }
-
-    .reader-hero {
-        width: 100%;
-        height: 450px;
-        border-radius: 20px;
-        overflow: hidden;
+    .reader-header-modern {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         margin-bottom: 3rem;
     }
 
-    .reader-hero img {
+    .back-btn-modern {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #0f172a;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn-modern:hover {
+        background: var(--gm-primary);
+        transform: translateX(-5px);
+    }
+
+    .modern-badge-mini {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--gm-primary);
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Article Card */
+    .article-glass-card {
+        background: var(--gm-card-bg);
+        backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 48px;
+        padding: 5rem;
+        box-shadow: 0 50px 120px -20px rgba(15, 23, 42, 0.08);
+        animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUpFade {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .article-top {
+        margin-bottom: 3.5rem;
+    }
+
+    .premium-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #0f172a;
+        line-height: 1.1;
+        letter-spacing: -2px;
+        margin-bottom: 1.5rem;
+    }
+
+    .article-meta-row {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .meta-v {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .meta-v i {
+        color: var(--gm-primary);
+    }
+
+    .reader-hero-modern {
+        width: 100%;
+        height: 500px;
+        border-radius: 32px;
+        overflow: hidden;
+        margin-bottom: 4rem;
+        position: relative;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .reader-hero-modern img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .article-body p {
-        font-size: 1.25rem;
-        line-height: 1.9;
+    .hero-overlay-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 60%, rgba(15, 23, 42, 0.2));
+    }
+
+    .premium-article-body {
+        max-width: 750px;
+        margin: 0 auto;
+    }
+
+    .premium-article-body p {
+        font-size: 1.35rem;
+        line-height: 1.8;
         color: #334155;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
+        font-weight: 400;
     }
 
-    .error-box {
+    .reader-footer-modern {
+        margin-top: 6rem;
+        padding-top: 3rem;
+        border-top: 1px solid #f1f5f9;
         text-align: center;
-        padding: 3rem;
     }
 
-    .external-btn {
-        display: inline-block;
-        margin-top: 1.5rem;
-        padding: 12px 24px;
-        background: #3b82f6;
-        color: white;
+    .disclaimer {
+        font-size: 0.9rem;
+        color: #94a3b8;
+        max-width: 500px;
+        margin: 0 auto 2rem;
+        font-style: italic;
+    }
+
+    .external-ref-link {
+        color: var(--gm-primary);
         text-decoration: none;
-        border-radius: 8px;
-        font-weight: 600;
-    }
-
-    .reader-header {
-        display: flex;
-        justify-content: space-between;
+        font-weight: 800;
+        font-size: 1rem;
+        display: inline-flex;
         align-items: center;
-        margin-bottom: 2rem;
-    }
-
-    .back-btn {
-        background: #0f172a;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
+        gap: 10px;
         transition: 0.3s;
     }
 
-    .back-btn:hover {
-        background: #334155;
-        transform: translateX(-5px);
-    }
-
-    .reader-mode-tag {
+    .external-ref-link:hover {
+        transform: translateY(-2px);
         color: #059669;
-        font-weight: 700;
-        font-size: 0.9rem;
-        background: #ecfdf5;
-        padding: 8px 16px;
-        border-radius: 50px;
     }
 
-    .reader-footer {
-        margin-top: 4rem;
-        padding-top: 2rem;
-        border-top: 1px solid #e2e8f0;
+    /* Error State */
+    .error-slate {
         text-align: center;
-        font-size: 0.9rem;
-        color: #94a3b8;
+        padding: 4rem 0;
     }
 
-    .reader-footer a {
-        color: #3b82f6;
+    .error-icon {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 2rem;
+    }
+
+    .error-slate h3 {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .error-slate p {
+        color: #64748b;
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.6;
+    }
+
+    .btn-external-direct {
+        background: var(--gm-primary);
+        color: white;
+        padding: 1.2rem 3rem;
+        border-radius: 18px;
         text-decoration: none;
-        font-weight: 600;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
     }
 
+    /* Responsive */
     @media (max-width: 768px) {
-        .reader-container {
-            padding: 1rem;
+        .article-glass-card {
+            padding: 2.5rem;
         }
 
-        .article-content-wrapper {
-            padding: 2rem;
+        .premium-title {
+            font-size: 2.2rem;
         }
 
-        .article-title {
-            font-size: 1.8rem;
+        .reader-hero-modern {
+            height: 300px;
+        }
+
+        .premium-article-body p {
+            font-size: 1.15rem;
         }
     }
 </style>
