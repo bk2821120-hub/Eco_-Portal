@@ -3,284 +3,544 @@
 {% block title %}GreenMind - EcoPortal{% endblock %}
 
 {% block content %}
-<section class="page-header">
-    <h1>EcoPortal GreenMind: Environmental Hub</h1>
-    <p>Stay updated with what's happening around our planet.</p>
-</section>
+<!-- Premium GreenMind Redesign -->
+<div class="greenmind-page-wrapper">
+    <section class="greenmind-hero">
+        <div class="hero-bloom"></div>
+        <div class="hero-content-modern">
+            <span class="modern-badge"><i class="fas fa-brain"></i> AI-Powered Insights</span>
+            <h1 class="modern-title">GreenMind <span class="accent-glow">Explorer</span></h1>
+            <p class="modern-subtitle">Deciphering environmental complexity through real-time data and educational
+                synthesis.</p>
 
-<section class="search-container">
-    <form action="{{ url_for('greenmind') }}" method="GET" class="search-form">
-        <div class="search-wrapper">
-            <i class="fas fa-search"></i>
-            <input type="text" name="q" placeholder="Search topics (e.g. Climate, India Pollution, Wildlife...)"
-                value="{{ search_query }}">
-            <button type="submit" class="btn-search">Search GreenMind</button>
+            <form action="{{ url_for('greenmind') }}" method="GET" class="modern-search">
+                <div class="modern-search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q"
+                        placeholder="Explore topics (e.g. Solar Tech, Forest Fire, Tiger Conservation...)"
+                        value="{{ search_query }}">
+                    <button type="submit">Scan Earth</button>
+                </div>
+            </form>
         </div>
-    </form>
-</section>
+    </section>
 
-<section class="news-container">
-    <div class="educational-feed">
-        {% if news %}
-        {% for item in news %}
-        <article class="educational-item">
-            <!-- 1. About Search (AI Insight) -->
-            <div class="ai-analysis-header">
-                <div class="ai-badge"><i class="fas fa-magic"></i> About Your Search</div>
-                <p class="ai-text">{{ item.ai_insight }}</p>
-            </div>
-
-            <div class="educational-content">
-                <!-- 2. Introductions -->
-                <div class="content-section">
-                    <h3 class="step-label">01. Shuruat (Overview)</h3>
-                    <p class="intro-p">{{ item.intro }}</p>
-                </div>
-
-                <!-- 3. Definitions -->
-                <div class="content-section definition-box">
-                    <h3 class="step-label">02. Samajhiye (Definitions)</h3>
-                    <p>{{ item.explanation }}</p>
-                </div>
-
-                <!-- 4. Point Real-time Example -->
-                <div class="content-section real-time-box">
-                    <h3 class="step-label">03. Asli Example (Live)</h3>
-                    <div class="example-content">
-                        <h4 class="example-title">{{ item.title }}</h4>
-                        <p class="impact-text"><strong>Live Impact:</strong> {{ item.impact }}</p>
+    <section class="educational-stream">
+        <div class="stream-container">
+            {% if news %}
+            {% for item in news %}
+            <article class="modern-edu-card" data-category="{{ item.category }}">
+                <div class="card-header-ai">
+                    <div class="ai-spark">
+                        <i class="fas fa-sparkles"></i>
+                        <span>AI Analysis</span>
                     </div>
+                    <div class="category-tag">{{ item.category }}</div>
                 </div>
 
-                <!-- 5. Images (Visual Proof) -->
-                {% if item.image %}
-                <div class="content-section visual-box">
-                    <h3 class="step-label">04. Dekhiye (Visuals)</h3>
-                    <div class="educational-image">
-                        <img src="{{ item.image }}" alt="{{ item.title }}">
-                        <div class="image-overlay">
-                            <span class="location-tag"><i class="fas fa-globe-asia"></i> {{ item.location }}</span>
+                <div class="card-body-grid">
+                    <div class="card-text-side">
+                        <div class="insight-bubble">
+                            <p>{{ item.ai_insight }}</p>
+                        </div>
+
+                        <div class="content-breakdown">
+                            <div class="content-block">
+                                <label>01. Overview</label>
+                                <p class="intro-main">{{ item.intro }}</p>
+                            </div>
+
+                            <div class="content-block glass-box">
+                                <label>02. Definition</label>
+                                <p>{{ item.explanation }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-visual-side">
+                        {% if item.image %}
+                        <div class="modern-visual-container">
+                            <img src="{{ item.image }}" alt="{{ item.title }}" loading="lazy">
+                            <div class="visual-label">
+                                <i class="fas fa-map-marker-alt"></i> {{ item.location }}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="live-example-box">
+                            <label>03. Live Impact</label>
+                            <h4>{{ item.title }}</h4>
+                            <p>{{ item.impact }}</p>
                         </div>
                     </div>
                 </div>
-                {% endif %}
 
-                <!-- 6. Link for Reference -->
-                <div class="content-section references">
-                    <h3 class="step-label">05. Aur Jaaniye (Links)</h3>
-                    <p class="learning-para"><i class="fas fa-lightbulb"></i> <strong>Learning Tip:</strong> {{
-                        item.learning_point }}</p>
-                    <a href="{{ item.internal_url }}" class="reference-btn">
-                        <i class="fas fa-link"></i> Read Original Resource (GreenMind Frame)
-                    </a>
+                <div class="card-footer-modern">
+                    <div class="footer-left">
+                        <span class="update-time"><i class="far fa-clock"></i> {{ item.date }}</span>
+                        <span class="verification-tag"><i class="fas fa-check-circle"></i> Source Verified</span>
+                    </div>
+                    <div class="footer-actions">
+                        <p class="learning-tip-mini"><strong>Tip:</strong> {{ item.learning_point }}</p>
+                        <a href="{{ item.internal_url }}" class="btn-modern-action">
+                            Deep Dive <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
+            </article>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state-modern">
+                <div class="empty-icon"><i class="fas fa-satellite-dish"></i></div>
+                <h2>Mission Data Unavailable</h2>
+                <p>We couldn't find specific ecological data for your query. Try broader terms like "Global Warming" or
+                    "Wildlife Protection".</p>
+                <a href="{{ url_for('greenmind') }}" class="btn-reset">Reset Dashboard</a>
             </div>
-
-            <footer class="educational-footer">
-                <div class="footer-meta">
-                    <span class="meta-item"><i class="fas fa-clock"></i> Updated: {{ item.date }}</span>
-                    <span class="meta-item verified"><i class="fas fa-shield-alt"></i> Gemini-AI Verified
-                        Analysis</span>
-                </div>
-            </footer>
-        </article>
-        {% endfor %}
-        {% else %}
-        <div class="no-news">
-            <i class="fas fa-search-minus"></i>
-            <h2>No Data Found for this Search.</h2>
-            <p>Try topics like "Climate Crisis", "Wildlife Conservation", or "India Air Quality".</p>
+            {% endif %}
         </div>
-        {% endif %}
-    </div>
-</section>
+    </section>
+</div>
 
 <style>
-    .educational-feed {
+    :root {
+        --gm-primary: #10b981;
+        --gm-secondary: #064e3b;
+        --gm-bg: #fdfdfd;
+        --gm-card-bg: rgba(255, 255, 255, 0.8);
+        --gm-accent: #3b82f6;
+    }
+
+    .greenmind-page-wrapper {
+        background-color: var(--gm-bg);
+        background-image:
+            radial-gradient(at 0% 0%, hsla(158, 64%, 92%, 1) 0, transparent 50%),
+            radial-gradient(at 50% 0%, hsla(202, 80%, 94%, 1) 0, transparent 50%),
+            radial-gradient(at 100% 0%, hsla(158, 64%, 92%, 1) 0, transparent 50%);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    /* Hero Styling */
+    .greenmind-hero {
+        padding: 8rem 5% 4rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .hero-bloom {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+        z-index: 0;
+    }
+
+    .hero-content-modern {
+        position: relative;
+        z-index: 1;
         max-width: 900px;
         margin: 0 auto;
-        padding: 2rem 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 4rem;
     }
 
-    .educational-item {
-        background: white;
-        border-radius: 32px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.07);
-        overflow: hidden;
-        border: 1px solid #f1f5f9;
-    }
-
-    .ai-analysis-header {
-        background: #f8fafc;
-        padding: 2.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .ai-badge {
+    .modern-badge {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        padding: 6px 16px;
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--gm-primary);
+        padding: 8px 20px;
         border-radius: 50px;
-        font-size: 0.75rem;
+        font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 1px;
-        margin-bottom: 1.2rem;
+        margin-bottom: 1.5rem;
     }
 
-    .ai-text {
+    .modern-title {
+        font-size: 4.5rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 1rem;
+        letter-spacing: -2px;
+    }
+
+    .accent-glow {
+        color: var(--gm-primary);
+        position: relative;
+    }
+
+    .modern-subtitle {
+        font-size: 1.35rem;
+        color: #64748b;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+    }
+
+    /* Modern Search */
+    .modern-search {
+        max-width: 750px;
+        margin: 0 auto;
+    }
+
+    .modern-search-wrapper {
+        display: flex;
+        align-items: center;
+        background: white;
+        padding: 0.6rem;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .modern-search-wrapper:focus-within {
+        transform: translateY(-5px);
+        box-shadow: 0 35px 60px -15px rgba(16, 185, 129, 0.2);
+        border-color: var(--gm-primary);
+    }
+
+    .modern-search-wrapper i {
+        padding: 0 1.5rem;
+        color: #94a3b8;
+        font-size: 1.2rem;
+    }
+
+    .modern-search-wrapper input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #0f172a;
+        font-family: inherit;
+    }
+
+    .modern-search-wrapper button {
+        background: var(--gm-primary);
+        color: white;
+        border: none;
+        padding: 1rem 2.5rem;
+        border-radius: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .modern-search-wrapper button:hover {
+        background: var(--gm-secondary);
+        transform: scale(1.02);
+    }
+
+    /* Stream Section */
+    .educational-stream {
+        padding: 4rem 5%;
+    }
+
+    .stream-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6rem;
+    }
+
+    /* Modern Card Layout */
+    .modern-edu-card {
+        background: var(--gm-card-bg);
+        backdrop-filter: blur(20px);
+        border-radius: 48px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        animation: cardFadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes cardFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(60px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-header-ai {
+        padding: 2.5rem 3rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .ai-spark {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--gm-primary);
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .category-tag {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .card-body-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 4rem;
+        padding: 0 3rem 3rem;
+    }
+
+    .insight-bubble {
+        background: #f8fafc;
+        padding: 2rem;
+        border-radius: 32px;
+        margin-bottom: 2.5rem;
+        border-left: 5px solid var(--gm-primary);
+    }
+
+    .insight-bubble p {
         font-size: 1.15rem;
         color: #334155;
         line-height: 1.6;
         font-weight: 500;
+        font-style: italic;
     }
 
-    .educational-content {
-        padding: 3rem;
-        display: flex;
-        flex-direction: column;
-        gap: 3.5rem;
-    }
-
-    .step-label {
-        font-size: 0.8rem;
+    .content-block label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
         color: #94a3b8;
         text-transform: uppercase;
         letter-spacing: 2px;
-        margin-bottom: 1rem;
-        font-weight: 700;
+        margin-bottom: 0.8rem;
     }
 
-    .intro-p {
-        font-size: 1.4rem;
-        line-height: 1.6;
+    .intro-main {
+        font-size: 1.6rem;
+        font-weight: 800;
         color: #0f172a;
-        font-weight: 700;
+        line-height: 1.4;
+        margin-bottom: 2.5rem;
     }
 
-    .definition-box {
-        background: #f1f5f9;
+    .glass-box {
+        background: rgba(16, 185, 129, 0.03);
         padding: 2rem;
         border-radius: 24px;
-        border-left: 6px solid #3b82f6;
+        border: 1px solid rgba(16, 185, 129, 0.1);
     }
 
-    .real-time-box {
-        background: #fff;
-    }
-
-    .example-content {
-        background: #f0fdf4;
-        padding: 2.5rem;
-        border-radius: 24px;
-        border: 1px solid #dcfce7;
-    }
-
-    .example-title {
-        font-size: 1.5rem;
-        color: #166534;
-        margin-bottom: 1rem;
-        font-weight: 800;
-    }
-
-    .impact-text {
-        color: #1e293b;
+    .glass-box p {
         font-size: 1.1rem;
+        color: #475569;
         line-height: 1.7;
     }
 
-    .educational-image {
-        border-radius: 20px;
+    /* Visual Side */
+    .modern-visual-container {
+        border-radius: 32px;
         overflow: hidden;
-        height: 400px;
+        height: 350px;
         position: relative;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
 
-    .educational-image img {
+    .modern-visual-container img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        transition: 0.5s;
     }
 
-    .image-overlay {
+    .modern-edu-card:hover .modern-visual-container img {
+        transform: scale(1.05);
+    }
+
+    .visual-label {
         position: absolute;
         bottom: 20px;
         left: 20px;
-    }
-
-    .location-tag {
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(10px);
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(8px);
         color: white;
-        padding: 6px 15px;
+        padding: 8px 16px;
         border-radius: 50px;
         font-size: 0.8rem;
         font-weight: 600;
     }
 
-    .learning-para {
-        margin-bottom: 1.5rem;
-        color: #475569;
+    .live-example-box h4 {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .live-example-box p {
+        color: #64748b;
         line-height: 1.6;
     }
 
-    .reference-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: #0f172a;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: 0.3s;
-    }
-
-    .reference-btn:hover {
-        background: #1e293b;
-        transform: translateY(-3px);
-    }
-
-    .educational-footer {
-        padding: 2rem 3rem;
+    /* Footer */
+    .card-footer-modern {
         background: #f8fafc;
+        padding: 2.5rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         border-top: 1px solid #f1f5f9;
     }
 
-    .footer-meta {
+    .footer-left {
         display: flex;
-        justify-content: space-between;
-        font-size: 0.85rem;
-        color: #64748b;
-        font-weight: 600;
+        gap: 2rem;
+        align-items: center;
     }
 
-    .verified {
-        color: #059669;
+    .update-time,
+    .verification-tag {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .verification-tag i {
+        color: var(--gm-primary);
+    }
+
+    .footer-actions {
+        display: flex;
+        align-items: center;
+        gap: 3rem;
+    }
+
+    .learning-tip-mini {
+        font-size: 0.9rem;
+        color: #475569;
+        max-width: 300px;
+        margin: 0;
+    }
+
+    .btn-modern-action {
+        background: #0f172a;
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-modern-action:hover {
+        background: var(--gm-primary);
+        transform: translateX(5px);
+    }
+
+    /* Empty States */
+    .empty-state-modern {
+        text-align: center;
+        padding: 6rem;
+        background: white;
+        border-radius: 48px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: 2rem;
+    }
+
+    .empty-state-modern h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .btn-reset {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 1rem 3rem;
+        background: #f1f5f9;
+        color: #0f172a;
+        border-radius: 18px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-reset:hover {
+        background: #e2e8f0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .card-body-grid {
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        .modern-title {
+            font-size: 3rem;
+        }
     }
 
     @media (max-width: 768px) {
-        .educational-content {
-            padding: 1.5rem;
+        .card-footer-modern {
+            flex-direction: column;
+            gap: 2rem;
+            align-items: flex-start;
         }
 
-        .educational-image {
-            height: 250px;
-        }
-
-        .intro-p {
-            font-size: 1.1rem;
+        .footer-actions {
+            width: 100%;
+            justify-content: space-between;
         }
     }
 </style>
+<script>
+    // Add simple scroll Reveal animation
+    document.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
 
-
+        document.querySelectorAll('.modern-edu-card').forEach(card => {
+            card.style.opacity = 0;
+            card.style.transform = 'translateY(40px)';
+            card.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+            observer.observe(card);
+        });
+    });
+</script>
 {% endblock %}
